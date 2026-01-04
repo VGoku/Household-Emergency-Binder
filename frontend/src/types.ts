@@ -18,7 +18,8 @@ export interface Pet {
   id: string;
   name: string;
   type: string;
-  vetContact: string;
+  vetName: string;
+  vetPhone: string;
   notes: string;
 }
 
@@ -30,11 +31,17 @@ export interface InsurancePolicy {
   phone: string;
 }
 
+export interface Note {
+  id: string;
+  content: string;
+}
+
 export interface EmergencyBinderData {
   contacts: Contact[];
   medications: Medication[];
   pets: Pet[];
   insurancePolicies: InsurancePolicy[];
-  notes: string;
+  notes: Note[];
+  backgroundImage?: string;
 }
 
