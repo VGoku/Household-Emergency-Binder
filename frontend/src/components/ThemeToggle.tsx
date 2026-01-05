@@ -1,5 +1,6 @@
+// Theme toggle button (switch between light and dark modes)
+// Theme toggle button (switch between light and dark modes)
 import { SunIcon, MoonIcon } from '@heroicons/react/24/outline';
-import { useState, useEffect } from 'react';
 
 interface ThemeToggleProps {
   isDark: boolean;

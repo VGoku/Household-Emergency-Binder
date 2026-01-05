@@ -1,4 +1,5 @@
-import { useState, useEffect, useMemo } from 'react';
+// Notes section: create and manage important text notes
+import { useState, useMemo } from 'react';
 import { DocumentTextIcon, PlusIcon, TrashIcon, PencilIcon, ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline';
 import type { Note } from '../types';
 import ConfirmModal from './ConfirmModal';

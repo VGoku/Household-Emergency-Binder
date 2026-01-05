@@ -1,3 +1,4 @@
+// Insurance section: manage insurance policies and contact numbers
 import { useState, useMemo } from 'react';
 import { ShieldCheckIcon, PlusIcon, TrashIcon, PencilIcon, ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline';
 import type { InsurancePolicy } from '../types';

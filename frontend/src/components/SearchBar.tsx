@@ -1,3 +1,4 @@
+// Search input used to filter items across all sections
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 
 interface SearchBarProps {

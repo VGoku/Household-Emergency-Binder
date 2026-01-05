@@ -1,3 +1,4 @@
+// Background settings: choose/upload/reset app background image
 import { useState, useRef } from 'react';
 import { PhotoIcon, XMarkIcon, LinkIcon } from '@heroicons/react/24/outline';
 

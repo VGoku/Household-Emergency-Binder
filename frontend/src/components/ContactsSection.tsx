@@ -1,3 +1,4 @@
+// Contacts section: manage, search, add, edit, and delete contacts
 import { useState, useMemo } from 'react';
 import { UserIcon, PlusIcon, TrashIcon, PencilIcon, ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline';
 import type { Contact } from '../types';

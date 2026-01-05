@@ -1,3 +1,4 @@
+// Pets section: add/edit pet info including vet contact
 import { useState, useMemo } from 'react';
 import { HeartIcon, PlusIcon, TrashIcon, PencilIcon, ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline';
 import type { Pet } from '../types';

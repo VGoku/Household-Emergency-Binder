@@ -1,3 +1,4 @@
+// Header: top bar with import/export, theme toggle, and last-updated info
 import { DocumentArrowDownIcon, DocumentArrowUpIcon } from '@heroicons/react/24/outline';
 import ThemeToggle from './ThemeToggle';
 

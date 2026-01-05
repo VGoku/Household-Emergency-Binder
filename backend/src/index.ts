@@ -1,3 +1,4 @@
+// Backend entry: simple Express server for API endpoints
 import express from "express";
 
 const app = express();

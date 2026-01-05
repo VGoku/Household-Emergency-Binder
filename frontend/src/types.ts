@@ -1,3 +1,4 @@
+// Type definitions for data shapes used across the app
 export interface Contact {
   id: string;
   name: string;

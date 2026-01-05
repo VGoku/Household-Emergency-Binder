@@ -1,3 +1,4 @@
+// Reusable confirmation modal used for destructive actions
 import { Fragment } from 'react';
 import { TrashIcon, XMarkIcon } from '@heroicons/react/24/outline';
 

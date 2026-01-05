@@ -1,3 +1,4 @@
+// Small UI indicator shown briefly after data is saved
 interface SavedIndicatorProps {
   show: boolean;
 }

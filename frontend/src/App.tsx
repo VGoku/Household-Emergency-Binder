@@ -1,4 +1,6 @@
+// Main App component: orchestrates sections, state, and persistence
 import { useState, useEffect, useCallback } from 'react';
+import { useRef } from 'react';
 import Header from './components/Header';
 import ContactsSection from './components/ContactsSection';
 import MedicationsSection from './components/MedicationsSection';
@@ -50,31 +52,40 @@ function App() {
 
   // Lazy initialization - load from LocalStorage on first render
   const [data, setData] = useState<EmergencyBinderData>(() => {
-    const saved = loadFromStorage();
-    if (saved) {
-      // Migrate old data format (notes as string) to new format (notes as Note[])
-      if (typeof saved.notes === 'string') {
-        saved.notes = saved.notes.trim()
-          ? [{ id: Date.now().toString(), content: saved.notes }]
-          : [];
-      }
-      // Migrate old pets format (vetContact) to new format (vetName, vetPhone)
-      if (saved.pets && saved.pets.length > 0) {
-        saved.pets = saved.pets.map((pet: any) => {
-          if (pet.vetContact && !pet.vetName && !pet.vetPhone) {
-            // Try to extract phone and name from vetContact
-            const phoneMatch = pet.vetContact.match(/\(?\d{3}\)?\s?-?\d{3}-?\d{4}/);
-            if (phoneMatch) {
-              const phone = phoneMatch[0];
-              const name = pet.vetContact.replace(phone, '').trim().replace(/^-\s*/, '');
-              return { ...pet, vetName: name, vetPhone: phone, vetContact: undefined };
+    // Parse raw storage to allow migrating older shapes safely
+    try {
+      const raw = localStorage.getItem('emergencyBinder');
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        // Migrate old data format (notes as string) to new format (notes as Note[])
+        if (typeof parsed.notes === 'string') {
+          parsed.notes = parsed.notes.trim()
+            ? [{ id: Date.now().toString(), content: parsed.notes }]
+            : [];
+        }
+        // Migrate old pets format (vetContact) to new format (vetName, vetPhone)
+        if (Array.isArray(parsed.pets) && parsed.pets.length > 0) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          parsed.pets = parsed.pets.map((pet: any) => {
+            if (pet && pet.vetContact && !pet.vetName && !pet.vetPhone) {
+              const phoneMatch = (pet.vetContact as string).match(/\(?\d{3}\)?\s?-?\d{3}-?\d{4}/);
+              if (phoneMatch) {
+                const phone = phoneMatch[0];
+                const name = (pet.vetContact as string).replace(phone, '').trim().replace(/^-\s*/, '');
+                return { ...pet, vetName: name, vetPhone: phone, vetContact: undefined };
+              }
+              return { ...pet, vetName: pet.vetContact, vetPhone: '', vetContact: undefined };
             }
-            return { ...pet, vetName: pet.vetContact, vetPhone: '', vetContact: undefined };
-          }
-          return pet;
-        });
+            return pet;
+          });
+        }
+        return parsed as EmergencyBinderData;
       }
-      return saved;
+    } catch (err) {
+      // Log parse errors and fall back to defaults
+      // This keeps legacy parsing safe while surfacing issues
+      // without throwing in production.
+      console.warn('Failed to parse stored emergencyBinder data:', err);
     }
     return defaultData;
   });
@@ -85,21 +96,27 @@ function App() {
     return saved ? new Date() : new Date();
   });
   const [searchQuery, setSearchQuery] = useState('');
-  const [isInitialMount, setIsInitialMount] = useState(true);
+  const isInitialMountRef = useRef(true);
 
   // Auto-save to LocalStorage whenever data changes (but not on initial load)
   useEffect(() => {
-    if (isInitialMount) {
-      setIsInitialMount(false);
+    if (isInitialMountRef.current) {
+      isInitialMountRef.current = false;
       return;
     }
-    
+
     saveToStorage(data);
-    setLastUpdated(new Date());
-    setSavedIndicator(true);
-    const timer = setTimeout(() => setSavedIndicator(false), 2000);
-    return () => clearTimeout(timer);
-  }, [data, isInitialMount]);
+    // Defer state updates to avoid synchronous setState inside effect
+    const startTimer = setTimeout(() => {
+      setLastUpdated(new Date());
+      setSavedIndicator(true);
+    }, 0);
+    const hideTimer = setTimeout(() => setSavedIndicator(false), 2000);
+    return () => {
+      clearTimeout(startTimer);
+      clearTimeout(hideTimer);
+    };
+  }, [data]);
 
   const updateData = useCallback((newData: EmergencyBinderData) => {
     setData(newData);
